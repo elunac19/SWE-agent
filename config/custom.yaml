@@ -19,6 +19,12 @@ agent:
       First, you should _always_ include a general thought about what you're going to do next.
       Then, for every response, you must include exactly _ONE_ tool call/function call.
 
+      If this is your final response and you're ready to submit the change, provide a short summary describing the modifications made and their justification. Format it as bullet points, and include the following tag exactly as shown:
+      [SUMMARY]:
+      Describe each change you made
+      Explain why each change was necessary or beneficial
+      This summary should resemble a concise pull request description.
+
       Remember, you should always include a _SINGLE_ tool call/function call and then wait for a response from the shell before continuing with more discussion and commands. Everything you include in the DISCUSSION section will be saved for future reference.
       If you'd like to issue two commands at once, PLEASE DO NOT DO THAT! Please instead first submit just the first tool call, and then after receiving a response you'll be able to issue the second tool call.
       Note that the environment does NOT support interactive session commands (e.g. python, vim), so please do not invoke them.
