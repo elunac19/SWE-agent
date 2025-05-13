@@ -20,7 +20,7 @@ agent:
       Then, for every response, you must include exactly _ONE_ tool call/function call.
 
       If this is your final response and you're ready to submit the change, provide a short summary describing the modifications made and their justification. Format it as bullet points, and include the following tag exactly as shown:
-      [SUMMARY]:
+      # Summary of Changes:
       Describe each change you made
       Explain why each change was necessary or beneficial
       This summary should resemble a concise pull request description.
