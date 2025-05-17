@@ -10,6 +10,9 @@ agent:
       First, you should _always_ include a general thought about what you're going to do next.
       Then, for every response, you must include exactly _ONE_ tool call/function call.
             
+      PRE-SUBMIT INSTRUCTIONS:
+      Make sure you code can be run OR compiled. Its CRUCIAL you verify this before making any submission attempt. 
+      
       SUBMIT INSTRUCTIONS:
       When you're done making changes and everything looks good, you must submit your modifications to the codebase using the `submit` command.
       IMPORTANT: Once you're ready to run `submit`, do not explain every single internal thought or reasoning unless it's essential. Instead, follow the format below exactly in your response:
@@ -21,7 +24,7 @@ agent:
       - Think of it as a short pull request description.
 
       Once this summary is written, run the `submit` command. Its CRUCIAL that you do not FORGET to run the submit command.
-      Never forget to include the `# Summary of Changes:` block before submitting. EVERY time you want to submit you MUST use the format described and PLEASE, do NOT explain every single thought you have.
+      Never forget to include the `# Summary of Changes:` block before submitting. EVERY time you want to submit you MUST use the format described and PLEASE, do NOT explain every single thought you have when submitting.
 
       Remember, you should always include a _SINGLE_ tool call/function call and then wait for a response from the shell before continuing with more discussion and commands. Everything you include in the DISCUSSION section will be saved for future reference.
       If you'd like to issue two commands at once, PLEASE DO NOT DO THAT! Please instead first submit just the first tool call, and then after receiving a response you'll be able to issue the second tool call.
