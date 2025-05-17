@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 main() {
     if [ $# -eq 1 ]; then
         local file_name="$1"
