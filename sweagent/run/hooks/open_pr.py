@@ -31,6 +31,7 @@ def open_pr(*, logger, token, env: SWEEnv, github_url, trajectory, _dry_run: boo
 
     issue_url = github_url
     logger.info("Opening PR")
+    issue = None
     try:
         issue = _get_gh_issue_data(issue_url, token=token)
     except InvalidGithubURL as e:
@@ -50,8 +51,8 @@ def open_pr(*, logger, token, env: SWEEnv, github_url, trajectory, _dry_run: boo
     env.communicate(input="git add .", error_msg="Failed to add commits", timeout=10, check="raise")
     dry_run_flag = "--allow-empty" if _dry_run else ""
     commit_msg = [
-        shlex.quote("Fix: {issue.title}"),
-        shlex.quote("Closes #{issue.number}"),
+        shlex.quote(f"Fix: {issue.title}"),
+        shlex.quote(f"Closes #{issue.number}"),
     ]
     out = env.communicate(
         input=f"git commit -m {commit_msg[0]} -m  {commit_msg[1]} {dry_run_flag}",
@@ -120,7 +121,7 @@ class OpenPRConfig(BaseModel):
     # Option to be used with open_pr: Skip action if there are already commits claiming
     # to fix the issue. Please only set this to False if you are sure the commits are
     # not fixes or if this is your own repository!
-    skip_if_commits_reference_issue: bool = True
+    skip_if_commits_reference_issue: bool = False
 
 
 class OpenPRHook(RunHook):
@@ -200,4 +201,4 @@ def format_trajectory_markdown(trajectory: list[dict[str, str]], char_limit: int
     complete_response = trajectory[-1]['response']
     upto_summary = complete_response.split("# Summary of Changes:")[0].strip()
 
-    return upto_summary + suffix_text
+    return "# Summary of Changes:\n" + upto_summary + suffix_text
