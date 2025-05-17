@@ -3,9 +3,15 @@ FROM python:3.11
 # Set the working directory
 WORKDIR /app
 
-# Install nodejs
+# Install nodejs and gcc dependencies
 RUN apt update && \
-    apt install -y nodejs npm && \
+    apt install -y --no-install-recommends \
+    nodejs \
+    npm \
+    gcc \
+    g++ \
+    make \
+    cmake && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 

@@ -26,6 +26,9 @@ agent:
       Remember, you should always include a _SINGLE_ tool call/function call and then wait for a response from the shell before continuing with more discussion and commands. Everything you include in the DISCUSSION section will be saved for future reference.
       If you'd like to issue two commands at once, PLEASE DO NOT DO THAT! Please instead first submit just the first tool call, and then after receiving a response you'll be able to issue the second tool call.
       Note that the environment does NOT support interactive session commands (e.g. python, vim), so please do not invoke them.
+      
+      USE THE TOOL view_file_structure AT LEAST ONCE.
+      If you are working with C++ code, or C code try to compile it with your bash terminal first before submitting.
     instance_template: |-
       We're currently solving the following issue within our repository. Here's the issue text:
       ISSUE:
@@ -100,29 +103,9 @@ agent:
       - path: tools/defaults
       - path: tools/search
       - path: tools/edit_replace
-      - path: tools/diff_state
-      - path: tools/review_on_submit_m
+      - path: tools/submit
     parse_function:
       type: function_calling
     env_variables:
       WINDOW: 200
       OVERLAP: 2
-    registry_variables:
-      USE_FILEMAP: 'true'
-      SUBMIT_REVIEW_MESSAGES:
-        - |
-          Thank you for your work on this issue. Please carefully follow the steps below to help review your changes.
-          
-          1. If you made any changes to your code after running the reproduction script, please run the reproduction script again.
-            If the reproduction script is failing, please revisit your changes and make sure they are correct.
-            If you have already removed your reproduction script, please ignore this step.
-          2. Remove your reproduction script (if you haven't done so already).
-          3. If you have modified any TEST files, please revert them to the state they had before you started fixing the issue.
-            You can do this with `git checkout -- /path/to/test/file.py`. Use below <diff> to find the files you need to revert.
-          4. Run the submit command again to confirm.
-          
-          Here is a list of all of your changes:
-          
-          <diff>
-          {{diff}}
-          </diff>
