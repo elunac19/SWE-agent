@@ -199,6 +199,5 @@ def format_trajectory_markdown(trajectory: list[dict[str, str]], char_limit: int
     suffix_text = "\n"
 
     complete_response = trajectory[-1]['response']
-    upto_summary = complete_response.split("# Summary of Changes:")[0].strip()
 
-    return "# Summary of Changes:\n" + upto_summary + suffix_text
+    return complete_response + suffix_text
