@@ -1,0 +1,9 @@
+tools:
+  compile:
+    signature: "compile [<filename>]"
+    docstring: "compiles with either g++ or gcc depending on type of file, does not produce output file."
+    arguments:
+      - name: filename
+        type: string
+        description: "the name of the file to compile, if no file is given, will try to compile current open file"
+        required: false
