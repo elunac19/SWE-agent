@@ -3,7 +3,7 @@ import sys
 import subprocess
 from windowed_file import FileNotOpened, WindowedFile  # type: ignore
 
-
+## we are not really compiling, just doing a sintax check
 def compile_c_code(file_to_compile: str):
     compiler = ""
     if file_to_compile.endswith(".cpp"):
@@ -14,13 +14,14 @@ def compile_c_code(file_to_compile: str):
         print("Only use this command to compile .c or .cpp files!")
         sys.exit(1)
 
-    compile_command = [compiler, file_to_compile]
+    compile_command = [compiler, file_to_compile,"-fsyntax-only"]
     try:
         # compile
         process = subprocess.run(compile_command, check=True, capture_output=True, text=True)
-        print(f"Compilation of '{file_to_compile}' successful.")
         if process.stderr:
             print(f"{compiler.upper()} warnings/errors:\n{process.stderr}")
+            sys.exit(1)
+        print(f"Compilation of '{file_to_compile}' successful.")
         sys.exit(1) # not sure about exiting here but oh well
     except subprocess.CalledProcessError as e:
         print(f"Error compiling '{file_to_compile}':")
