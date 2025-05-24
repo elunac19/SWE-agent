@@ -207,6 +207,14 @@ class InstancesFromFile(BaseModel, AbstractInstanceSource):
         return self.path.stem
 
 
+def add_image_name(instance):
+    iid = instance["instance_id"]
+    id_docker_compatible = iid.replace("__", "_1776_")
+    image_name = f"swebench/sweb.eval.x86_64.{id_docker_compatible}:latest".lower()
+    instance["image_name"] = image_name
+    return instance
+
+
 class InstancesFromHuggingFace(BaseModel, AbstractInstanceSource):
     """Load instances from HuggingFace."""
 
@@ -234,13 +242,8 @@ class InstancesFromHuggingFace(BaseModel, AbstractInstanceSource):
     def get_instance_configs(self) -> list[BatchInstance]:
         from datasets import load_dataset
 
-        ds: list[dict[str, Any]] = load_dataset(self.dataset_name, split=self.split)  # type: ignore
-        ## CUSTOM FIX FOR US SINCE I COPIED THEIR DATASET
-        for instance in ds:
-            iid = instance["instance_id"]
-            id_docker_compatible = iid.replace("__", "_1776_")
-            image_name = f"swebench/sweb.eval.x86_64.{id_docker_compatible}:latest".lower()
-            instance["image_name"] = image_name
+        ds: Dataset = load_dataset(self.dataset_name, split=self.split)  # type: ignore
+        ds = ds.map(add_image_name=add_image_name)
 
         simple_instances: list[SimpleBatchInstance] = [SimpleBatchInstance.model_validate(instance) for instance in ds]
         instances = [instance.to_full_batch_instance(self.deployment) for instance in simple_instances]
