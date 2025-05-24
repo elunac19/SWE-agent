@@ -208,10 +208,12 @@ class InstancesFromFile(BaseModel, AbstractInstanceSource):
 
 
 def add_image_name(instance):
-    iid = instance["instance_id"]
-    id_docker_compatible = iid.replace("__", "_1776_")
-    image_name = f"swebench/sweb.eval.x86_64.{id_docker_compatible}:latest".lower()
-    instance["image_name"] = image_name
+    ## will only add image_name if its not present in dataset in hugging face
+    if instance["image_name"] is None:
+        iid = instance["instance_id"]
+        id_docker_compatible = iid.replace("__", "_1776_")
+        image_name = f"swebench/sweb.eval.x86_64.{id_docker_compatible}:latest".lower()
+        instance["image_name"] = image_name
     return instance
 
 
