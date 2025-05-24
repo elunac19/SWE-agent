@@ -235,6 +235,13 @@ class InstancesFromHuggingFace(BaseModel, AbstractInstanceSource):
         from datasets import load_dataset
 
         ds: list[dict[str, Any]] = load_dataset(self.dataset_name, split=self.split)  # type: ignore
+        ## CUSTOM FIX FOR US SINCE I COPIED THEIR DATASET
+        for instance in ds:
+            iid = instance["instance_id"]
+            id_docker_compatible = iid.replace("__", "_1776_")
+            image_name = f"swebench/sweb.eval.x86_64.{id_docker_compatible}:latest".lower()
+            instance["image_name"] = image_name
+
         simple_instances: list[SimpleBatchInstance] = [SimpleBatchInstance.model_validate(instance) for instance in ds]
         instances = [instance.to_full_batch_instance(self.deployment) for instance in simple_instances]
         return _filter_batch_items(instances, filter_=self.filter, slice_=self.slice, shuffle=self.shuffle)
