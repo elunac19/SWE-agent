@@ -198,6 +198,11 @@ def format_trajectory_markdown(trajectory: list[dict[str, str]], char_limit: int
     """
     suffix_text = "\n"
 
-    complete_response = trajectory[-1]['response']
+    for element in trajectory:
+        response = element['response']
+        index = response.find("# Summary of Changes:")
+        if index != -1:
+            complete_response = response[index:]
+            break
 
     return complete_response + suffix_text
