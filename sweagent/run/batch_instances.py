@@ -243,7 +243,7 @@ class InstancesFromHuggingFace(BaseModel, AbstractInstanceSource):
         from datasets import load_dataset
 
         ds: Dataset = load_dataset(self.dataset_name, split=self.split)  # type: ignore
-        ds = ds.map(add_image_name=add_image_name)
+        ds = ds.map(add_image_name)
 
         simple_instances: list[SimpleBatchInstance] = [SimpleBatchInstance.model_validate(instance) for instance in ds]
         instances = [instance.to_full_batch_instance(self.deployment) for instance in simple_instances]
