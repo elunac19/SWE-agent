@@ -30,29 +30,35 @@ agent:
 
       If you are working with C++ code, or C code, you MUST attempt to compile it using the `compile` tool before submitting. Do not submit code that fails to compile.
     instance_template: |-
-      We're currently solving the following issue within our repository. Here's the issue text:
-      ISSUE:
-      {{problem_statement}}
+      I've uploaded a code repository in the directory {{working_dir}}. Consider the following PR description:
+      <pr_description>
+          {{problem_statement}}
+      </pr_description>
 
       INSTRUCTIONS:
-      Now, you're going to solve this issue on your own. Your terminal session has started and you're in the repository's root directory. You can use any bash commands or the special interface to help you. Edit all the files you need to and run any checks or tests that you want.
-      Remember, YOU SHOULD ALWAYS INCLUDE EXACTLY ONE TOOL CALL/FUNCTION CALL PER RESPONSE.
+      Can you help me implement the necessary changes to the repository so that the requirements specified in the <pr_description> are met?
+      I've already taken care of all changes to any of the test files described in the <pr_description>. This means you DON'T have to modify the testing logic or any of the tests in any way!
+      Your task is to make the minimal changes to non-tests files in the {{working_dir}} directory to ensure the <pr_description> is satisfied.
 
       IMPORTANT TIPS:
-
-      1. If you run a command and it doesn't work, try running a different command. A command that did not work once will not work the second time unless you modify it!
-
-      2. Always make sure to look at the currently open file and the current working directory (which appears right after the currently open file). The currently open file might be in a different directory than the working directory! Note that some commands, such as 'create', open files, so they might change the current open file.
-
-      3. When editing files, it is easy to accidentally specify a wrong line number or to write code with incorrect indentation. Always check the code after you issue an edit to make sure that it reflects what you wanted to accomplish. If it didn't, issue another command to fix it.
-
-      4. Do not try to install any packages with `pip`, `conda`, or any other way. This will usually not work. If the environment is not set up correctly, try to fix the issue without executing python code or running any tests that require the package installed.
       
-      5. Note however that you cannot use any interactive session commands (e.g. python, vim) in this environment, but you can write scripts and run them. E.g. you can write a python script and then run it with the python <script_name>.py`.
+      1. As a first step, it might be a good idea to find and read code relevant to the <pr_description>. Remember, most issues come from EXISTING files.
+      
+      2. Its generally a good idea to try to reproduce the issue to start. You can create files with the 'create' tool and run them with bash (think about how to run files in different languages, some might need to be compiled first!)
+      
+      3. If you run a command and it doesn't work, try running a different command. A command that did not work once will not work the second time unless you modify it!
 
-      6. Please note that THE EDIT COMMAND REQUIRES PROPER INDENTATION. If you'd like to add the line '        print(x)' you must fully write that out, with all those spaces before the code! Indentation is important and code that is not indented correctly will fail and require fixing before it can be run.
+      4. Always make sure to look at the currently open file and the current working directory (which appears right after the currently open file). The currently open file might be in a different directory than the working directory! Note that some commands, such as 'create', open files, so they might change the current open file.
+
+      5. When editing files, it is easy to accidentally specify a wrong line number or to write code with incorrect indentation. Always check the code after you issue an edit to make sure that it reflects what you wanted to accomplish. If it didn't, issue another command to fix it.
+
+      6. Do not try to install any packages with `pip`, `conda`, or any other way. This will usually not work. If the environment is not set up correctly, try to fix the issue without executing python code or running any tests that require the package installed.
+      
+      7. Note however that you cannot use any interactive session commands (e.g. python, vim) in this environment, but you can write scripts and run them. E.g. you can write a python script and then run it with the python <script_name>.py`.
+
+      8. Please note that THE EDIT COMMAND REQUIRES PROPER INDENTATION. If you'd like to add the line '        print(x)' you must fully write that out, with all those spaces before the code! Indentation is important and code that is not indented correctly will fail and require fixing before it can be run.
     
-      7. If you are working with `.c` or `.cpp` files, you MUST use the `compile` tool to build your code and ensure it compiles without errors before attempting to submit.
+      9. If you are working with `.c` or `.cpp` files, you MUST use the `compile` tool to build your code and ensure it compiles without errors before attempting to submit.
 
 
       (Open file: {{open_file}})
@@ -65,19 +71,6 @@ agent:
       bash-$
     next_step_no_output_template: |-
       Your command ran successfully and did not produce any output.
-      (Open file: {{open_file}})
-      (Current directory: {{working_dir}})
-      bash-$
-    #demonstration_template: |
-    #  Here is a demonstration of how to correctly accomplish this task.
-    #  It is included to show you how to correctly use the interface.
-    #  You do not need to follow exactly what is done in the demonstration.
-    #  --- DEMONSTRATION ---
-    #  {{demonstration}}
-    #  --- END OF DEMONSTRATION ---
-    demonstrations:
-      - trajectories/demonstrations/human_thought__swe-bench-HumanEvalFix-python__lcb__t-0.00__p-0.95__c-4.00__install-0/humanevalfix-python-0.traj
-    put_demos_in_history: true
   model:
     name: hosted_vllm/Qwen3-14b
     api_base: https://dodi1408--openai-compatible-romoamigo-qwen-3-1-8b-serve.modal.run/v1
