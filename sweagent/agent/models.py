@@ -543,7 +543,7 @@ class InstantEmptySubmitTestModel(AbstractModel):
                 "DISCUSSION\n"
                 "Let's reproduce the bug by creating a `reproduce.py` file.\n\n"
                 "```\n"
-                "create reproduce.py\n"
+                "touch reproduce.py\n"
                 "```\n"
             )
         elif self._action_idx == 1:
@@ -582,14 +582,14 @@ class LiteLLMModel(AbstractModel):
             self.model_max_output_tokens = litellm.model_cost.get(self.config.name, {}).get("max_output_tokens")
             # Special handling for Claude 3.7 models to set 64k context by default when beta header not present
             # See https://github.com/SWE-agent/SWE-agent/pull/1016
-            is_claude_3_7 = "claude-3-7-sonnet" in self.config.name
+            is_claude_3_7 = "claude-3-7-sonnet" in self.config.name or "claude-sonnet-4" in self.config.name
             has_128k_beta_header = (
                 self.config.completion_kwargs.get("extra_headers", {}).get("anthropic-beta") == "output-128k-2025-02-19"
             )
             if is_claude_3_7 and not has_128k_beta_header:
                 self.model_max_output_tokens = 64000
                 self.logger.warning(
-                    "Claude 3.7 models do not support 128k context by default. "
+                    "Claude 3.7/4 models do not support 128k context by default. "
                     "Setting max output tokens to 64k. To enable 128k context, please set the "
                     "completion_kwargs to {'extra_headers': {'anthropic-beta': 'output-128k-2025-02-19'}}."
                 )

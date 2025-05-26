@@ -90,13 +90,15 @@ agent:
   tools:
     enable_bash_tool: true
     bundles:
+      - path: tools/multilingual_setup
       - path: tools/registry
-      - path: tools/defaults
+      - path: tools/windowed
       - path: tools/search
-      - path: tools/edit_replace
+      - path: tools/windowed_edit_replace
       - path: tools/submit
       - path: tools/forfeit
       - path: tools/cbundle
+      - path: tools/diff_state
     parse_function:
       type: function_calling
     env_variables:

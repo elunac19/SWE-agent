@@ -125,10 +125,16 @@ class TemplateConfig(BaseModel):
         return self
 
     @model_validator(mode="after")
-    def warn_models_in_history(self) -> Self:
+    def warnings(self) -> Self:
+        logger = get_logger("swea-config", emoji="🔧")
         if self.put_demos_in_history and self.demonstration_template is not None:
-            logger = get_logger("swea-config", emoji="🔧")
             logger.warning("demonstration_template is ignored when put_demos_in_history is True")
+        if not self.system_template or not self.instance_template:
+            logger.warning(
+                "system_template/instance_template is not set, using empty string. Perhaps you were"
+                " overwriting the default config? See https://swe-agent.com/latest/usage/cl_tutorial/"
+                " for more information. Note: You can ignore this warning in human mode."
+            )
         return self
 
 
@@ -769,8 +775,8 @@ class DefaultAgent(AbstractAgent):
         self.logger.warning(f"{error_template}")
 
         return self.messages + [
-            {"role": "assistant", "content": output, "agent": self.name},
-            {"role": "user", "content": error_template, "agent": self.name},
+            {"role": "assistant", "content": output, "agent": self.name, "message_type": "assistant"},
+            {"role": "user", "content": error_template, "agent": self.name, "message_type": "user"},
         ]
 
     def attempt_autosubmission_after_error(self, step: StepOutput) -> StepOutput:
@@ -976,6 +982,7 @@ class DefaultAgent(AbstractAgent):
         # attributes (e.g., if we want to requery the model for a bash syntax error, we
         # need to have the previous model output to format the requery template)
         step = StepOutput()
+        step.query = copy.deepcopy(history)
         try:
             # Forward model and get actions
             self._chook.on_model_query(messages=history, agent=self.name)
@@ -1175,7 +1182,7 @@ class DefaultAgent(AbstractAgent):
                 "thought": step.thought,
                 "execution_time": step.execution_time,
                 "state": step.state,
-                "messages": self.messages,
+                "query": step.query,
                 "extra_info": step.extra_info,
             },
         )
