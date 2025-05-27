@@ -5,7 +5,7 @@ agent:
     - type: default
       model: &model
         name: hosted_vllm/Qwen3-14b
-        api_base: https://dodi1408--openai-compatible-romoamigo-qwen-3-1-8b-serve.modal.run/v1
+        api_base: https://riku-li--openai-compatible-romoamigo-qwen-3-1-8b-serve.modal.run/v1 #https://dodi1408--openai-compatible-romoamigo-qwen-3-1-8b-serve.modal.run/v1
         api_key: ROISASUPERHOE
         per_instance_cost_limit: 0   # (2)!
         total_cost_limit: 0
@@ -39,8 +39,9 @@ agent:
           2. You could try to create a reproduction script.
           3. Edit the sourcecode of the repo to resolve the issue
           4. Think about edgecases and make sure your fix handles them as well
-          
-          While your thinking should be through, we expect that you keep your output to the minimum, since you are autonomous.
+
+          While your thinking should be through, DO NOT output all of your thinking, keep it to a minimum. Instead of talking about the edits you want to do, just use tools to do them.
+          Focus on doing actions NOT talking about doing the actions.
         next_step_template: &next_step_no_diff |-
           OBSERVATION:
           {{observation}}
@@ -55,14 +56,16 @@ agent:
           - path: tools/registry
           - path: tools/windowed
           - path: tools/search
-          - path: tools/windowed_edit_replace
+          - path: tools/edit_anthropic
           - path: tools/review_on_submit_m
-          - path: tools/forfeit
           - path: tools/cbundle
           - path: tools/diff_state
         enable_bash_tool: true
         parse_function: &parse_function
           type: function_calling
+        env_variables: &env_variables
+          WINDOW: 100
+          OVERLAP: 2
         registry_variables:
           SUBMIT_REVIEW_MESSAGES: &submit_review_messages
             - |
@@ -111,6 +114,7 @@ agent:
         bundles: *vanilla_bundles
         enable_bash_tool: true
         parse_function: *parse_function
+        env_variables: *env_variables
         registry_variables:
           SUBMIT_REVIEW_MESSAGES: *submit_review_messages
       history_processors: &diff_history_processors
@@ -122,7 +126,7 @@ agent:
           n: 5
   retry_loop:
     type: chooser
-    max_attempts: 3
+    max_attempts: 2
     cost_limit: 6.0
     chooser:
       system_template: |
