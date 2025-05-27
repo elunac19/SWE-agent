@@ -23,7 +23,7 @@ agent:
           <uploaded_files>
           {{working_dir}}
           </uploaded_files>
-          I've uploaded a python code repository in the directory {{working_dir}}. Consider the following PR description:
+          I've uploaded a code repository in the directory {{working_dir}}. Consider the following PR description:
           Can you help me implement the necessary changes to the repository so that the requirements specified in the <pr_description> are met?
           I've already taken care of all changes to any of the test files described in the <pr_description>. This means you DON'T have to modify the testing logic or any of the tests in any way!
           Your task is to make the minimal changes to non-tests files in the {{working_dir}} directory to ensure the <pr_description> is satisfied.
@@ -117,6 +117,7 @@ agent:
   retry_loop:
     type: chooser
     max_attempts: 3
+    cost_limit: 6.0
     chooser:
       system_template: |
         You are an expert software engineer reviewing code. Your thinking is very thorough, so it is ok if its very long.

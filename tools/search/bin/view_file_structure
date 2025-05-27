@@ -5,6 +5,12 @@ print_node() {
     local current_path="$1"
     local current_indent="$2"
     local name=$(basename "$current_path")
+
+    # Check if the name starts with a dot and it's a directory, then skip
+    if [[ -d "$current_path" && "$name" =~ ^\. ]]; then
+        return # Skip this directory
+    fi
+
     if [ -d "$current_path" ]; then
       printf "%b${current_indent}\e[1;34m%s/\e[0m\n" "$current_indent" "$name"
       find "$current_path" -maxdepth 1 -mindepth 1 -not -name "." -not -name ".." -print0 | \
@@ -22,6 +28,11 @@ main() {
 
   if [ -z "$start_dir" ]; then
     start_dir="."
+  fi
+
+  if [[ -d "$start_dir" && "$start_dir_name" =~ ^\. && "$start_dir_name" != "." ]]; then
+    echo "Error: Starting directory '$start_dir' is a hidden directory and cannot be listed directly."
+    return 1
   fi
 
   if [ -d "$start_dir" ]; then
