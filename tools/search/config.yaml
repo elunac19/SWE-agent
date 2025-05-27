@@ -37,7 +37,7 @@ tools:
         required: false
   view_file_structure:
     signature: "view_file_structure [<dir>]"
-    docstring: "Generates a pretty print of the file structure starting from the given directory. If no directory is provided, it defaults to the current directory."
+    docstring: "Generates a pretty print of the file structure starting from the given directory. If no directory is provided, it defaults to the current directory. WARNING: Do not run on REPO ROOT, YOU ARE WORKING ON MASSIVE REPOS."
     arguments:
       - name: dir
         type: string

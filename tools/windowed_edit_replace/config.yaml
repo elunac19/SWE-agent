@@ -20,17 +20,6 @@ tools:
       you can search for `Hello world` and replace with `"Hello"\n    print("world")`
       (note the extra spaces before the print statement!).
 
-      Tips:
-
-      1. Always include proper whitespace/indentation
-      2. When you are adding an if/with/try statement, you need to INDENT the block that follows, so make sure to include it in both your search and replace strings!
-      3. If you are wrapping code in a try statement, make sure to also add an 'except' or 'finally' block.
-
-      Before every edit, please
-
-      1. Explain the code you want to edit and why it is causing the problem
-      2. Explain the edit you want to make and how it fixes the problem
-      3. Explain how the edit does not break existing functionality
     arguments:
       - name: search
         type: string

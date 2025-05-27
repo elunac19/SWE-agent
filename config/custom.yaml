@@ -42,7 +42,7 @@ agent:
 
       IMPORTANT TIPS:
       
-      1. As a first step, it might be a good idea to find and read code relevant to the <pr_description>. Remember, most issues come from EXISTING files. There is a tool called view_file_structure that will let you view the whole file structure. You can then move to subdirectories using bash.
+      1. As a first step, it might be a good idea to find and read code relevant to the <pr_description>. Remember, most issues come from EXISTING files. You can begin your search by listing directories using bash, moving through them or even searching files and dirs with tools.
       
       2. Its generally a good idea to try to reproduce the issue to start. You can create files with the 'create' tool and run them with bash (think about how to run files in different languages, some might need to be compiled first!)
       
@@ -81,6 +81,7 @@ agent:
     max_input_tokens: 0  # (3)!
     temperature: 0.3
   tools:
+    execution_timeout: 60
     enable_bash_tool: true
     bundles:
       - path: tools/multilingual_setup
