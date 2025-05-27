@@ -14,6 +14,7 @@ from typing import Annotated, Any, Literal
 
 import litellm
 import litellm.types.utils
+from openai import api_key
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import ConfigDict, Field, SecretStr
 from swerex.exceptions import SwerexException
@@ -158,12 +159,21 @@ class GenericAPIModelConfig(PydanticBaseModel):
                 return []
         return api_key.split(":::")
 
-    def choose_api_key(self) -> str | None:
+    def get_api_bases(self) -> list[str]:
+        """Returns a list of API bases that were explicitly set in this config.
+        Does not return API keys that were set via environment variables/.env
+        """
+        if self.api_base is None:
+            return []
+        return self.api_base.split(":::")
+
+    def choose_api_key(self) -> tuple[str, str] | None | Any:
         """Chooses an API key based on the API keys explicitly set in this config.
         If no API keys are set, returns None (which means that the API key will be
         taken from the environment variables/.env file).
         """
         api_keys = self.get_api_keys()
+        api_bases = self.get_api_bases()
         if not api_keys:
             return None
         if not self.choose_api_key_by_thread:
@@ -176,7 +186,10 @@ class GenericAPIModelConfig(PydanticBaseModel):
         get_logger("config", emoji="🔧").debug(
             f"Choosing API key {key_idx} for thread {thread_name} (idx {thread_idx})"
         )
-        return api_keys[key_idx]
+        get_logger("config", emoji="🔧").debug(
+            f"Choosing API base {api_bases[key_idx]} for thread {thread_name} (idx {thread_idx})"
+        )
+        return api_keys[key_idx], api_bases[key_idx]
 
     @property
     def id(self) -> str:
@@ -668,9 +681,12 @@ class LiteLLMModel(AbstractModel):
             msg = f"Input tokens {input_tokens} exceed max tokens {self.model_max_input_tokens}"
             raise ContextWindowExceededError(msg)
         extra_args = {}
+        #MODIFY HERE
+
+        chosen_api_key, api_base = self.config.choose_api_key()
         if self.config.api_base:
             # Not assigned a default value in litellm, so only pass this if it's set
-            extra_args["api_base"] = self.config.api_base
+            extra_args["api_base"] = api_base
         if self.tools.use_function_calling:
             extra_args["tools"] = self.tools.tools
         # We need to always set max_tokens for anthropic models
@@ -684,7 +700,7 @@ class LiteLLMModel(AbstractModel):
                 temperature=self.config.temperature if temperature is None else temperature,
                 top_p=self.config.top_p,
                 api_version=self.config.api_version,
-                api_key=self.config.choose_api_key(),
+                api_key=chosen_api_key,
                 fallbacks=self.config.fallbacks,
                 **completion_kwargs,
                 **extra_args,

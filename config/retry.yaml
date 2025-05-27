@@ -167,7 +167,7 @@ agent:
         {{edited_files30}}
       max_len_submission: &chooser_max_len_submission 5000
       model:
-        name: azure/gpt-4.1
+        name: azure/gpt-4o-mini
         api_base: https://a0163-maq4fz41-eastus2.openai.azure.com/
         api_key: #AZURE_API_KEY"] EXPORT AZURE_API_KEY HERE
         api_version: 2025-01-01-preview
