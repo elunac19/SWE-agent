@@ -115,10 +115,14 @@ class SimpleBatchInstance(BaseModel):
             repo = None
         elif "github" in self.repo_name:
             repo = GithubRepoConfig(github_url=self.repo_name, base_commit=self.base_commit)
+            logger.info(f"Using GITHUB: {repo}")
         elif "/" not in self.repo_name:
             repo = PreExistingRepoConfig(repo_name=self.repo_name, base_commit=self.base_commit)
+            logger.info(f"Using PREXISTING: {repo}")
         else:
             repo = LocalRepoConfig(path=Path(self.repo_name), base_commit=self.base_commit)
+            logger.info(f"Using LOCAL: {repo}")
+        logger.info(f"Using repo: {repo}")
         if isinstance(deployment, LocalDeploymentConfig):
             if self.image_name:
                 msg = "Local deployment does not support image_name"
@@ -207,13 +211,15 @@ class InstancesFromFile(BaseModel, AbstractInstanceSource):
         return self.path.stem
 
 
-def add_image_name(instance):
+def add_extras(instance):
     ## will only add image_name if its not present in dataset in hugging face
     if instance["image_name"] is None:
         iid = instance["instance_id"]
         id_docker_compatible = iid.replace("__", "_1776_")
         image_name = f"swebench/sweb.eval.x86_64.{id_docker_compatible}:latest".lower()
         instance["image_name"] = image_name
+    if instance["repo_name"] is None:
+        instance["repo_name"] = instance["repo"].split("/")[-1]
     return instance
 
 
@@ -245,7 +251,7 @@ class InstancesFromHuggingFace(BaseModel, AbstractInstanceSource):
         from datasets import load_dataset
 
         ds: Dataset = load_dataset(self.dataset_name, split=self.split)  # type: ignore
-        ds = ds.map(add_image_name)
+        ds = ds.map(add_extras)
 
         simple_instances: list[SimpleBatchInstance] = [SimpleBatchInstance.model_validate(instance) for instance in ds]
         instances = [instance.to_full_batch_instance(self.deployment) for instance in simple_instances]

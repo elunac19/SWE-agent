@@ -183,12 +183,6 @@ class GenericAPIModelConfig(PydanticBaseModel):
             _THREADS_THAT_USED_API_KEYS.append(thread_name)
         thread_idx = _THREADS_THAT_USED_API_KEYS.index(thread_name)
         key_idx = thread_idx % len(api_keys)
-        get_logger("config", emoji="🔧").debug(
-            f"Choosing API key {key_idx} for thread {thread_name} (idx {thread_idx})"
-        )
-        get_logger("config", emoji="🔧").debug(
-            f"Choosing API base {api_bases[key_idx]} for thread {thread_name} (idx {thread_idx})"
-        )
         return api_keys[key_idx], api_bases[key_idx]
 
     @property
@@ -681,9 +675,11 @@ class LiteLLMModel(AbstractModel):
             msg = f"Input tokens {input_tokens} exceed max tokens {self.model_max_input_tokens}"
             raise ContextWindowExceededError(msg)
         extra_args = {}
-        #MODIFY HERE
-
-        chosen_api_key, api_base = self.config.choose_api_key()
+        try:
+            chosen_api_key, api_base = self.config.choose_api_key()
+        except Exception as e:
+            self.logger.error(f"Exception raised while choosing api key: {e}")
+            raise e
         if self.config.api_base:
             # Not assigned a default value in litellm, so only pass this if it's set
             extra_args["api_base"] = api_base
