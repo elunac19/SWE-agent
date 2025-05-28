@@ -4,7 +4,7 @@ agent:
     # +filemap
     - type: default
       model: &model
-        name: hosted_vllm/Qwen3-14b
+        name: hosted_vllm/Qwen3-8b
         api_base: https://riku-li--openai-compatible-romoamigo-qwen-3-1-8b-serve.modal.run/v1 #https://dodi1408--openai-compatible-romoamigo-qwen-3-1-8b-serve.modal.run/v1
         api_key: ROISASUPERHOE
         per_instance_cost_limit: 0   # (2)!
