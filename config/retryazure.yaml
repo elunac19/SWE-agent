@@ -4,14 +4,16 @@ agent:
     # +filemap
     - type: default
       model: &model
-        name: hosted_vllm/Qwen3-8b
-        api_base: https://riku-li--openai-compatible-romoamigo-qwen-3-1-8b-serve.modal.run/v1:::https://tec-team24--openai-compatible-romoamigo-qwen-3-1-8b-serve.modal.run/v1
-        api_key: ROISASUPERHOE:::ROISASUPERHOE
-        per_instance_cost_limit: 0   # (2)!
+        name: azure/gpt-4o-mini
+        api_base: https://a0163-maq4fz41-eastus2.openai.azure.com/:::https://organization3468147693.openai.azure.com/
+        api_key: #2-AZURE-KEYS :::
+        api_version: 2025-01-01-preview
+        per_instance_cost_limit: 0 # (2)!
         total_cost_limit: 0
-        per_instance_call_limit: 100
-        max_input_tokens: 0  # (3)!
-        temperature: 0.4
+        per_instance_call_limit: 20
+        max_input_tokens: 0 # (3)!
+        temperature: 0.3
+        delay: 10.0
       templates:
         system_template: &system_template |-
           You are a helpful assistant working directly in the command line with a special interface.

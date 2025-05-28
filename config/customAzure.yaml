@@ -9,7 +9,7 @@ agent:
     per_instance_call_limit: 40 # max steps
     max_input_tokens: 0  # (3)!
     temperature: 0.3
-    delay: 1.0
+    delay: 5.0
   templates:
     system_template: |-
           You are a helpful assistant working directly in the command line with a special interface.
