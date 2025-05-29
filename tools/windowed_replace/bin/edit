@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+
+import argparse
+import sys
+from typing import Tuple, Union
+
+try:
+    from sweagent import TOOLS_DIR
+except ImportError:
+    pass
+else:
+    default_lib = TOOLS_DIR / "windowed" / "lib"
+    assert default_lib.is_dir()
+    sys.path.append(str(default_lib))
+    sys.path.append(str(TOOLS_DIR / "registry" / "lib"))
+
+from windowed_file import FileNotOpened, WindowedFile  # type: ignore
+from flake8_utils import flake8, format_flake8_output  # type: ignore
+
+_USAGE_MSG = """Usage: edit <start_line>:<end_line>
+<replacement_text>
+end_of_edit"""
+
+_EDIT_SUCCESS_MSG = """File updated. Please review the changes and make sure they are correct
+(correct indentation, no duplicate lines, etc). Edit the file again if necessary."""
+
+def get_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("line_range", help="Line range in format start:end")
+    parser.add_argument("replacement_text", help="Text to insert", nargs="?")
+    return parser
+
+
+def parse_line_range(line_range: str) -> Tuple[int, int]:
+    try:
+        start, end = map(int, line_range.split(":"))
+        return start - 1, end - 1
+    except ValueError:
+        print(_USAGE_MSG)
+        exit(1)
+
+
+def main(line_range: str, replacement_text: Union[str, None] = None):
+    # Handle file opening
+    try:
+        wf = WindowedFile(exit_on_exception=False)
+    except FileNotOpened:
+        print("No file opened. Use the `open` command first.")
+        exit(1)
+
+    # Parse line range
+    start_line, end_line = parse_line_range(line_range)
+
+    if replacement_text is None:
+        print(_USAGE_MSG)
+        exit(1)
+
+    # Perform the edit
+    wf.set_window_text(replacement_text, line_range=(start_line, end_line))
+
+
+    # Success - update window position and show result
+    wf.goto(start_line, mode="top")
+    print(_EDIT_SUCCESS_MSG)
+    wf.print_window()
+
+if __name__ == "__main__":
+    main(**vars(get_parser().parse_args()))

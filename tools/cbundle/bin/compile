@@ -6,7 +6,7 @@ from windowed_file import FileNotOpened, WindowedFile  # type: ignore
 ## we are not really compiling, just doing a sintax check
 def compile_c_code(file_to_compile: str):
     compiler = ""
-    if file_to_compile.endswith(".cpp"):
+    if file_to_compile.endswith(".cpp") or file_to_compile.endswith(".h") or file_to_compile.endswith(".hpp"):
         compiler = "g++"
     elif file_to_compile.endswith(".c"):
         compiler = "gcc"

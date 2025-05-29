@@ -23,7 +23,10 @@ agent:
           2.  **NO PRE-AMBLE:** Do *not* output any preparatory text, thinking process, or conversational filler before taking action.
           3.  **MINIMAL INTERNAL THOUGHT:** If any internal thought is necessary (e.g., parsing a complex request before a tool call), keep it to an absolute minimum. *Never* output this thinking process to the user.
           4.  **DIRECT TOOL USAGE:** When a tool is the solution, your response *must* be solely the tool call. Do not explain *why* you are calling the tool, just call it.
-          5.  **CONSEQUENCES FOR VERBOSITY:** Exceeding these instructions, particularly by outputting unnecessary text or pre-thinking, will result in immediate termination of the task and a critical system error. This is a hard constraint.
+          5.  **REPEATED TOOL USAGE:** Using the *same* tool multiple times with the same arguments will *NOT* yield different results. If a tool is not working as expected, try changing tool or changing your arguments. 
+          6.  **NO INSTALLING PACKAGES** Your environment is not designed for you to install packages with pip, apt-get, or other packet managers. So please *don't* do that.
+          7.  **INTERACTIVE BASH USAGE**  Your environment is not designed for you to use interactive commands. So please *don't* do that.
+          8.  **CONSEQUENCES FOR VERBOSITY:** Exceeding these instructions, particularly by outputting unnecessary text or pre-thinking, will result in immediate termination of the task and a critical system error. This is a hard constraint.
           
           **AVOID AT ALL COSTS:**
 
@@ -80,6 +83,7 @@ agent:
           2. You could try to create a reproduction script.
           3. Edit the sourcecode of the repo to resolve the issue
           4. Think about edgecases and make sure your fix handles them as well
+          5. Read what all of your tools do! One of them might be the key you need to do an edit properly or locate the file where the problem is.
 
         next_step_template: &next_step_no_diff |-
           OBSERVATION:
@@ -96,6 +100,7 @@ agent:
           - path: tools/windowed
           - path: tools/search
           - path: tools/edit_anthropic
+          - path: tools/windowed_replace
           - path: tools/review_on_submit_m
           - path: tools/cbundle
           - path: tools/diff_state
@@ -112,7 +117,7 @@ agent:
 
               1. Read your code carefully.
               2. Remove your reproduction script (if you haven't done so already).
-              3. Ensure your code can be run OR compiled successfully. For C and C++ files, it is CRUCIAL to compile your code using the `compile` tool and verify there are no syntax errors.
+              3. Ensure your code can be run OR compiled successfully. For C and C++ files, it is CRUCIAL to compile your code using the `compile` tool and verify there are no syntax errors, if a package is missing, then don't worry about it, its IMPOSSIBLE to install packages in your environment. So just continue with your submission.
               4. Run the submit command again to confirm.
 
               Here is a list of all of your changes:
