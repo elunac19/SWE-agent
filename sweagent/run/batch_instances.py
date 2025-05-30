@@ -119,7 +119,6 @@ class SimpleBatchInstance(BaseModel):
             repo = PreExistingRepoConfig(repo_name=self.repo_name, base_commit=self.base_commit)
         else:
             repo = LocalRepoConfig(path=Path(self.repo_name), base_commit=self.base_commit)
-        logger.info(f"Using repo: {repo}")
         if isinstance(deployment, LocalDeploymentConfig):
             if self.image_name:
                 msg = "Local deployment does not support image_name"
