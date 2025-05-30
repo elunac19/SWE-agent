@@ -15,7 +15,6 @@ else:
     sys.path.append(str(TOOLS_DIR / "registry" / "lib"))
 
 from windowed_file import FileNotOpened, WindowedFile  # type: ignore
-from flake8_utils import flake8, format_flake8_output  # type: ignore
 
 _USAGE_MSG = """Usage: edit <start_line>:<end_line>
 <replacement_text>
