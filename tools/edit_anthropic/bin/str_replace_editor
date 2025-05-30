@@ -626,7 +626,7 @@ class EditTool:
             "a snippet of the edited file",
             max(1, insert_line - SNIPPET_LINES + 1),
         )
-        success_msg += "Review the changes and make sure they are as expected (correct indentation, no duplicate lines, etc). Edit the file again if necessary."
+        success_msg += "Review the changes and make sure they are as expected. If working with python, check indentation"
         print(success_msg)
 
     def undo_edit(self, path: Path):

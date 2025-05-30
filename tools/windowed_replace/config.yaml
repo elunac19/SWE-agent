@@ -9,7 +9,7 @@ tools:
       All of the <replacement text> will be entered, so make
       sure your indentation is formatted properly.
 
-      Please note that THIS COMMAND REQUIRES PROPER INDENTATION.
+      Please note that THIS COMMAND REQUIRES PROPER INDENTATION in PYTHON FILES NOT C FILES.
       If you'd like to add the line '        print(x)' you must fully write that out, with all those spaces before the code!
     arguments:
       - name: start_line

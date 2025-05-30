@@ -10,7 +10,7 @@ agent:
         api_version: 2025-01-01-preview
         per_instance_cost_limit: 0 # (2)!
         total_cost_limit: 0
-        per_instance_call_limit: 20
+        per_instance_call_limit: 80
         max_input_tokens: 0 # (3)!
         temperature: 0.3
         delay: 10.0

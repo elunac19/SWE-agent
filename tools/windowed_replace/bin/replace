@@ -17,8 +17,7 @@ else:
 from windowed_file import FileNotOpened, WindowedFile  # type: ignore
 
 _USAGE_MSG = """Usage: edit <start_line>:<end_line>
-<replacement_text>
-end_of_edit"""
+<replacement_text>"""
 
 _EDIT_SUCCESS_MSG = """File updated. Please review the changes and make sure they are correct
 (correct indentation, no duplicate lines, etc). Edit the file again if necessary."""
@@ -35,6 +34,7 @@ def parse_line_range(line_range: str) -> Tuple[int, int]:
         start, end = map(int, line_range.split(":"))
         return start - 1, end - 1
     except ValueError:
+        print("ValueError", ValueError)
         print(_USAGE_MSG)
         exit(1)
 
@@ -51,6 +51,7 @@ def main(line_range: str, replacement_text: Union[str, None] = None):
     start_line, end_line = parse_line_range(line_range)
 
     if replacement_text is None:
+        print("replacement_text is None", replacement_text)
         print(_USAGE_MSG)
         exit(1)
 
