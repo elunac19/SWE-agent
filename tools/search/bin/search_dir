@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 main() {
     if [ $# -eq 1 ]; then
         local search_term="$1"
@@ -32,7 +34,50 @@ main() {
     fi
 
     echo "Found $num_matches matches for \"$search_term\" in $dir:"
-    echo "$matches" | awk '{$2=$2; gsub(/^\.+\/+/, "./", $2); print $2 " ("$1" matches)"}'
+    echo "$matches" | while read count filepath; do
+        # Get file length
+        local lines
+        lines=$(wc -l < "$filepath" 2>/dev/null  | awk '{$1=$1; print $0}' || echo "0" | awk '{$1=$1; print $0}')
+
+        # Calculate density (matches per 100 lines)
+        local density
+        if [ "$lines" -gt 0 ]; then
+            density=$(awk "BEGIN {printf \"%.1f\", $count * 100 / $lines}")
+        else
+            density="0.0"
+        fi
+
+        # Count commits touching this file in last 6 months
+        local commits6mo
+        commits6mo=$(git log --since="6 months ago" --oneline -- "$filepath" 2>/dev/null | wc -l | awk '{$1=$1; print $0}')
+
+        local commits1mo
+        commits1mo=$(git log --since="1 month ago" --pretty=oneline -- "$filepath" 2>/dev/null| wc -l | awk '{$1=$1; print $0}')
+
+        local last_change
+        last_change=$(git log -1 --pretty=format:"%ad" --date=short -- "$filepath" 2>/dev/null)
+
+
+        # Get all matches
+        local all_matches
+        all_matches=$(grep -n "$search_term" "$filepath")
+
+        # Filter for lines that contain common code characters (heuristic)
+        # We're looking for lines that have at least one of these:
+        # (, ), {, }, [, ], ;, =, ., +, -, *, /, %, <, >, &, |, !, ~, ^, :
+        code_matches_lines=$(echo "$all_matches" | grep -E '\(|\)|\{|\}|\[|\]|;|=|\.|\+|-|\*|/|%|<|>|&|\||!|~|\^|:' 2>/dev/null)
+
+        # Count them
+        local code_matches_count
+        code_matches_count=$(echo "$code_matches_lines" | wc -l | awk '{$1=$1; print $0}')
+
+        # Clean up path
+        local clean_path
+        clean_path=$(echo "$filepath" | sed 's/^\.\/\+/.\//g')
+
+        # Output with enhanced info
+        echo "$clean_path ($lines lines, $count total matches, $code_matches_count code matches (estimate), density: ${density}%, last modified: $last_change, $commits6mo commits in 6mo, $commits1mo commits in 1mo)"
+    done
     echo "End of matches for \"$search_term\" in $dir"
 }
 

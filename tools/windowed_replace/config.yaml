@@ -1,8 +1,7 @@
 tools:
   replace:
     signature: |
-      replace <start_line>:<end_line>
-      <replacement_text>
+      replace <start_line>:<end_line> <replacement_text>
     docstring: >
       Replaces lines <start_line> through <end_line> (inclusive) with the given text
       in the open file.

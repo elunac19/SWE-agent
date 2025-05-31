@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 main() {
     # Check if the first argument is provided
     local search_term="${1:-}"

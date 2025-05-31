@@ -1,79 +1,87 @@
 agent:
   templates:
-    system_template: |-
-      SETTING: You are an autonomous programmer, working directly in the command line with a special interface.
-
+    system_template: &system_template |-
+      You are an expert AI assistant specialized in code generation and tool execution working directly in the command line with a special interface. Your primary directive is to be concise, actionable, and *immediately* utilize tools when appropriate.
       The special interface consists of a file editor that shows you {{WINDOW}} lines of a file at a time and allows you to interact with the file system and other tools through function calls.
+      For every response, you must include exactly ONE tool call/function call.
 
-      First, you should always include a brief thought about your next step.
-      Then, for every response, you must include exactly ONE tool call/function call.
+      **CORE DIRECTIVES:**
+      1.  **ACTION-FIRST:** Your response *must* begin with a tool call. A tool call is *always* needed, no exceptions. 
+      2.  **NO PRE-AMBLE:** Do *not* output any preparatory text, thinking process, or conversational filler before taking action.
+      3.  **MINIMAL INTERNAL THOUGHT:** If any internal thought is necessary (e.g., parsing a complex request before a tool call), keep it to an absolute minimum. *Never* output this thinking process to the user.
+      4.  **DIRECT TOOL USAGE:** When a tool is the solution, your response *must* be solely the tool call. Do not explain *why* you are calling the tool, just call it.
+      5.  **REPEATED TOOL USAGE:** Using the *same* tool multiple times with the same arguments will *NOT* yield different results. If a tool is not working as expected, try changing tool or changing your arguments. 
+      6.  **NO INSTALLING PACKAGES** Your environment is not designed for you to install packages with pip, apt-get, or other packet managers. So please *don't* do that.
+      7.  **INTERACTIVE BASH USAGE**  Your environment is not designed for you to use interactive commands. So please *don't* do that.
+      8.  **CONSEQUENCES FOR VERBOSITY:** Exceeding these instructions, particularly by outputting unnecessary text or pre-thinking, will result in immediate termination of the task and a critical system error. This is a hard constraint.
 
-      PRE-SUBMIT INSTRUCTIONS:
-      Before submitting, ensure your code can be run OR compiled successfully. For C and C++ files, it is CRUCIAL to compile your code using the `compile` tool and verify there are no errors.
+      **AVOID AT ALL COSTS:**
 
-      SUBMIT INSTRUCTIONS:
-      When you're done making changes and everything looks good, you must submit your modifications to the codebase using the `submit` command.
-      IMPORTANT: Once you're ready to run `submit`, do not explain every single internal thought or reasoning unless it's essential. Instead, follow the format below exactly in your response:
+      * Phrases like "I will now use the tool..." or "My thinking is..."
+      * Paragraphs of reasoning before a tool call.
+      * Summarizing what you are about to do.
+      * Any text that does not directly contribute to the output or tool execution.
 
-      # Summary of Changes:
-      - Describe what was changed.
-      - Explain why each change was necessary or beneficial.
-      - Use bullet points, be concise and clear.
-      - Think of it as a short pull request description.
+      **Example of desired behavior:**
+      *User Input*: 
+        OBSERVATION:                                                                                                                                                  
+        [File: /elunac19__test_repo_swe_agent/medium_area_calculator.cpp (15 lines total)]                                                                            
+        1:#include <iostream>                                                                                                                                         
+        2:                                                                                                                                                            
+        3:double areaRectangle(double width, double height) {                                                                                                         
+        4:    return width * height;                                                                                                                                  
+        5:}                                                                                                                                                           
+        6:                                                                                                                                                            
+        7:double areaCircle(double radius) {                                                                                                                          
+        8:    return 3.14159 * radius * radius;                                                                                                                       
+        9:}                                                                                                                                                           
+        10:                                                                                                                                                           
+        11:int main() {                                                                                                                                               
+        12:    std::cout << "Rectangle area: " << areaRectangle(4, 5) << std::endl;                                                                                   
+        13:    std::cout << "Circle area: " << areaCircle(3) << std::endl;                                                                                            
+        14:    return 0;                                                                                                                                              
+        15:}                                                                                                                                                          
+        OPEN_FILE: /elunac19__test_repo_swe_agent/medium_area_calculator.cpp                                                                                          
+        CURRENT_DIR: /elunac19__test_repo_swe_agent)
+      *Your Output*: None
+      Function:(arguments='{"text":"#include <vector>\\n#include <memory>\\n\\nclass Shape {\\npublic:\\n         
+        virtual double area() const = 0;\\n    virtual ~Shape() {}\\n};\\n\\nclass Rectangle : public Shape {\\nprivate:\\n    double width, height;\\npublic:\\n     
+        Rectangle(double w, double h) : width(w), height(h) {}\\n    double area() const override {\\n        return width * height;\\n    }\\n};\\n\\nclass Circle : 
+        public Shape {\\nprivate:\\n    double radius;\\npublic:\\n    Circle(double r) : radius(r) {}\\n    double area() const override {\\n        return 3.14159 *
+        radius * radius;\\n    }\\n};\\n","line":0}', name='insert')
+    instance_template: &instance_template |-
 
-      Once this summary is written, run the `submit` command. It is CRUCIAL that you do not FORGET to run the submit command.
-      Never forget to include the `# Summary of Changes:` block before submitting. EVERY time you want to submit you MUST use the format described and PLEASE, do NOT explain every single thought you have when submitting.
+      <uploaded_files>
+      {{working_dir}}
+      </uploaded_files>
 
-      Remember, you should always include a SINGLE tool call/function call and then wait for a response from the shell before continuing with more discussion and commands. Everything you include in the DISCUSSION section will be saved for future reference.
-      If you'd like to issue two commands at once, PLEASE DO NOT DO THAT! Please instead first submit just the first tool call, and then after receiving a response you'll be able to issue the second tool call.
-      Note that the environment does NOT support interactive session commands (e.g., python, vim), so please do not invoke them.
+       I've uploaded a code repository in the directory {{working_dir}}. Consider the following PR description:
 
-      If you are working with C++ code, or C code, you MUST attempt to compile it using the `compile` tool before submitting. Do not submit code that fails to compile.
-    instance_template: |-
-      I've uploaded a code repository in the directory {{working_dir}}. Consider the following PR description:
       <pr_description>
-          {{problem_statement}}
+      {{problem_statement}}
       </pr_description>
 
-      INSTRUCTIONS:
       Can you help me implement the necessary changes to the repository so that the requirements specified in the <pr_description> are met?
       I've already taken care of all changes to any of the test files described in the <pr_description>. This means you DON'T have to modify the testing logic or any of the tests in any way!
       Your task is to make the minimal changes to non-tests files in the {{working_dir}} directory to ensure the <pr_description> is satisfied.
 
-      IMPORTANT TIPS:
-      
-      1. As a first step, it might be a good idea to find and read code relevant to the <pr_description>. Remember, most issues come from EXISTING files. You can begin your search by listing directories using bash, moving through them or even searching files and dirs with tools.
-      
-      2. Its generally a good idea to try to reproduce the issue to start. You can create files with the 'create' tool and run them with bash (think about how to run files in different languages, some might need to be compiled first!)
-      
-      3. If you run a command and it doesn't work, try running a different command. A command that did not work once will not work the second time unless you modify it!
+      Follow these steps to resolve the issue:
+      1. As a first step, it might be a good idea to find and read code relevant to the <pr_description>. This is VERY import. Most issues are in EXISTING files, there are various tools and bash commands you can use to accomplish this.
+      2. You could try to create a reproduction script.
+      3. Edit the sourcecode of the repo to resolve the issue
+      4. Think about edgecases and make sure your fix handles them as well
+      5. Read what all of your tools do! One of them might be the key you need to do an edit properly or locate the file where the problem is.
 
-      4. Always make sure to look at the currently open file and the current working directory (which appears right after the currently open file). The currently open file might be in a different directory than the working directory! Note that some commands, such as 'create', open files, so they might change the current open file.
-
-      5. When editing files, it is easy to accidentally specify a wrong line number or to write code with incorrect indentation. Always check the code after you issue an edit to make sure that it reflects what you wanted to accomplish. If it didn't, issue another command to fix it.
-
-      6. Do not try to install any packages with `pip`, `conda`, or any other way. This will usually not work. If the environment is not set up correctly, try to fix the issue without executing python code or running any tests that require the package installed.
-      
-      7. Note however that you cannot use any interactive session commands (e.g. python, vim) in this environment, but you can write scripts and run them. E.g. you can write a python script and then run it with the python <script_name>.py`.
-
-      8. Please note that THE EDIT COMMAND REQUIRES PROPER INDENTATION. If you'd like to add the line '        print(x)' you must fully write that out, with all those spaces before the code! Indentation is important and code that is not indented correctly will fail and require fixing before it can be run.
-    
-      9. If you are working with `.c` or `.cpp` files, you MUST use the `compile` tool to build your code and ensure it compiles without errors before attempting to submit.
-
-
-      (Open file: {{open_file}})
-      (Current directory: {{working_dir}})
-      bash-$
-    next_step_template: |-
+    next_step_template: &next_step_no_diff |-
+      OBSERVATION:
       {{observation}}
-      (Open file: {{open_file}})
-      (Current directory: {{working_dir}})
-      bash-$
-    next_step_no_output_template: |-
-      Your command ran successfully and did not produce any output.
+      OPEN_FILE: {{open_file}}
+      CURRENT_DIR: {{working_dir}})
+    next_step_no_output_template: &next_step_no_output_no_diff |-
+      Your last command ran successfully and did not produce any output.
   model:
-    name: hosted_vllm/Qwen3-14b
-    api_base: https://dodi1408--openai-compatible-romoamigo-qwen-3-1-8b-serve.modal.run/v1
+    name: hosted_vllm/Qwen3CoderCLoRa
+    api_base: https://dodi1408--openai-compatible-romoamigo-qwen3-14b-serve.modal.run/v1
     api_key: ROISASUPERHOE
     per_instance_cost_limit: 0   # (2)!
     total_cost_limit: 0
@@ -81,16 +89,16 @@ agent:
     max_input_tokens: 0  # (3)!
     temperature: 0.3
   tools:
-    execution_timeout: 60
+    execution_timeout: 300
     enable_bash_tool: true
     bundles:
       - path: tools/multilingual_setup
       - path: tools/registry
       - path: tools/windowed
       - path: tools/search
-      - path: tools/windowed_edit_replace
-      - path: tools/submit
-      - path: tools/forfeit
+      - path: tools/edit_anthropic
+      - path: tools/windowed_replace
+      - path: tools/review_on_submit_m
       - path: tools/cbundle
       - path: tools/diff_state
     parse_function:
@@ -98,3 +106,21 @@ agent:
     env_variables:
       WINDOW: 150
       OVERLAP: 2
+    registry_variables:
+      SUBMIT_REVIEW_MESSAGES: &submit_review_messages
+        - |
+          Thank you for your work on this issue. Please carefully follow the steps below to help review your changes.
+          
+          1. Read your code carefully.
+          2. Remove your reproduction script (if you haven't done so already).
+          3. Ensure your code can be run OR compiled successfully. For C and C++ files, it is CRUCIAL to compile your code using the `compile` tool and verify there are no syntax errors, if a package is missing, then don't worry about it, its IMPOSSIBLE to install packages in your environment. So just continue with your submission.
+          4. Run the submit command again to confirm.
+          
+          Here is a list of all of your changes:
+          
+          <diff>
+          {{diff}}
+          </diff>
+  history_processors: &vanilla_history_processors
+    - type: last_n_observations
+      n: 5
