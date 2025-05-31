@@ -58,6 +58,7 @@ class SWEEnv:
         post_startup_command_timeout: int = 500,
         hooks: list[EnvHook] | None = None,
         name: str = "main",
+        suspicious_files : str| None = None
     ):
         """This class represents the environment in which we solve the tasks.
 
@@ -70,6 +71,7 @@ class SWEEnv:
             name: Name of the environment
         """
         super().__init__()
+        self.suspicious_files = suspicious_files
         self.deployment = deployment
         self.repo = repo
         self._post_startup_commands = post_startup_commands
