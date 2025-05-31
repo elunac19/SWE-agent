@@ -154,6 +154,7 @@ class DefaultAgentConfig(BaseModel):
     action_sampler: ActionSamplerConfig | None = None
 
     type: Literal["default"] = "default"
+    finder: bool = False
 
     # pydantic config
     model_config = ConfigDict(extra="forbid")
@@ -383,13 +384,16 @@ class RetryAgent(AbstractAgent):
             step_output = self.step()
             self.save_trajectory(choose=False)
             if step_output.done:
-                self._rloop.on_submit(
+                if self._agent.finder:
+                    files_found = self._agent.info["submission"]
+                    self._env.suspicious_files = files_found
+                else:
+                    self._rloop.on_submit(
                     ReviewSubmission(
                         trajectory=self._agent.trajectory,
                         info=self._agent.info,
-                        model_stats=self._agent.model.stats,
-                    )
-                )
+                        model_stats=self._agent.model.stats,))
+
                 if isinstance(self._rloop, ScoreRetryLoop):
                     self._agent.info["review"] = self._rloop.reviews[-1].model_dump()  # type: ignore
                 self._finalize_agent_run()
@@ -422,6 +426,7 @@ class DefaultAgent(AbstractAgent):
         _catch_errors: bool = True,
         _always_require_zero_exit_code: bool = False,
         action_sampler_config: ActionSamplerConfig | None = None,
+        finder: bool = False,
     ):
         """The agent handles the behaviour of the model and how it interacts with the environment.
 
@@ -433,6 +438,7 @@ class DefaultAgent(AbstractAgent):
         self.model = model
         self.templates = templates
         self.tools = tools
+        self.finder = finder
         if isinstance(self.model, HumanThoughtModel):
             self.tools.config.parse_function = ThoughtActionParser()
         elif isinstance(self.model, HumanModel):
@@ -480,6 +486,7 @@ class DefaultAgent(AbstractAgent):
             model=model,
             max_requeries=config.max_requeries,
             action_sampler_config=config.action_sampler,
+            finder=config.finder,
         )
 
     def add_hook(self, hook: AbstractAgentHook) -> None:
@@ -558,6 +565,7 @@ class DefaultAgent(AbstractAgent):
         self.info["swe_rex_hash"] = get_rex_commit_hash()
         assert self._env is not None
         assert self._problem_statement is not None
+        self._env.set_env_variables({"SUSPICIOUS_FILES" : self._env.suspicious_files})
         self._env.set_env_variables({"PROBLEM_STATEMENT": self._problem_statement.get_problem_statement()})
         self.add_system_message_to_history()
         self.add_demonstrations_to_history()
@@ -622,12 +630,21 @@ class DefaultAgent(AbstractAgent):
         """
         assert self._problem_statement is not None
         assert self._env is not None
+
+        # Get the suspicious files list from _env
+        suspicious_files_list = self._env.suspicious_files if self._env.suspicious_files is not None else []
+
+        # Convert the Python list of dicts to a formatted JSON string
+        # This will ensure it's rendered nicely with indentation in the template
+        formatted_suspicious_files = json.dumps(suspicious_files_list, indent=2)
+
         return dict(
             command_docs=self.tools.config.command_docs,
             **self.tools.config.env_variables,
             **kwargs,
             problem_statement=self._problem_statement.get_problem_statement(),
             repo=self._env.repo.repo_name if self._env.repo is not None else "",
+            suspicious_files=formatted_suspicious_files,
             **self._problem_statement.get_extra_fields(),
         )
 
@@ -840,10 +857,13 @@ class DefaultAgent(AbstractAgent):
         step = step.model_copy(deep=True)
         assert self.tools is not None
         is_submission = self.tools.check_for_submission_cmd(observation or step.observation)
+        path_to_submission = "/root/model.patch"
+        if self.finder:
+            path_to_submission = "/root/files_submissions.json"
         if is_submission or force_submission:
             assert self._env is not None
             try:
-                submission = self._env.read_file("/root/model.patch", encoding="utf-8", errors="backslashreplace")
+                submission = self._env.read_file(path_to_submission, encoding="utf-8", errors="backslashreplace")
             except FileNotFoundError:
                 self.logger.warning("Submission file not found, no submission was made")
                 return step

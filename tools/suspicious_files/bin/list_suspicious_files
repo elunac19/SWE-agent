@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+import json
+from typing import List, Dict
+
+from registry import registry as REGISTRY
+
+def main():
+    culprits_json_string = REGISTRY.get("file_culprits", json.dumps([]))
+    culprits: List[Dict[str, str]] = json.loads(culprits_json_string)
+
+    # 2. Check if the list is empty and print appropriate message
+    if not culprits:
+        print("No suspicious files currently identified in the registry.")
+    else:
+        # 3. Iterate and print details for each suspicious file
+        print("\n--- Currently Identified Suspicious Files ---")
+        for i, file_data in enumerate(culprits):
+            print(f"  {i + 1}. Filepath:   {file_data.get('filepath', 'N/A')}")
+            print(f"     Type:       {file_data.get('type', 'N/A')}")
+            print(f"     Severity:   {file_data.get('severity', 'N/A')}")
+            print(f"     Reasoning:  {file_data.get('reasoning', 'N/A')}")
+            print("-" * 40)  # Separator for readability
+        print("-------------------------------------------\n")
+
+
+if __name__ == "__main__":
+    main()

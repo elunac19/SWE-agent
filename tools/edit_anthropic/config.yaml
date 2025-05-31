@@ -28,7 +28,7 @@ tools:
         required: true
       - name: file_text
         type: string
-        description: "Required parameter of `create` command, with the content of the file to be created."
+        description: "Required parameter of `create` command, with the content of the file to be created. Use '\\n' for newlines."
         required: false
         argument_format: "--file_text {{value}}"
       - name: old_str
@@ -38,12 +38,12 @@ tools:
         argument_format: "--old_str {{value}}"
       - name: new_str
         type: string
-        description: "Optional parameter of `str_replace` command containing the new string (if not given, no string will be added). Required parameter of `insert` command containing the string to insert."
+        description: "Optional parameter of `str_replace` command containing the new string (if not given, no string will be added). Required parameter of `insert` command containing the string to insert. Use '\\n' for newlines."
         required: false
         argument_format: "--new_str {{value}}"
       - name: insert_line
         type: integer
-        description: "Required parameter of `insert` command. The `new_str` will be inserted AFTER the line `insert_line` of `path`."
+        description: "Required parameter of `insert` command. The `new_str` will be inserted AFTER the line `insert_line` of `path`. Use '\\n' for newlines."
         required: false
         argument_format: "--insert_line {{value}}"
       - name: view_range

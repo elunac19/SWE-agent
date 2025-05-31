@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+
+import argparse
+import json
+from typing import List, Dict
+
+from registry import registry as REGISTRY
+from windowed_file import FileNotOpened, WindowedFile  # type: ignore
+
+
+def get_parser() -> argparse.ArgumentParser:
+    """Sets up the argument parser for adding suspicious files."""
+    parser = argparse.ArgumentParser(description="Add suspicious files identified by the agent.")
+    # Arguments for remove_suspicious_file
+    parser.add_argument("filepath", type=str, required=True,
+                        help="The suspicious file to remove.")
+    return parser
+
+
+def main(file_path: str) -> None:
+
+    # 1. Retrieve existing culprits from REGISTRY and parse them from JSON string to Python list
+    culprits_json_string = REGISTRY.get("file_culprits", json.dumps([]))
+    culprits: List[Dict[str, str]] = json.loads(culprits_json_string)
+
+    initial_culprit_count = len(culprits)
+    # 2. Filter out the culprit with the specified filepath
+    # This creates a new list without the item(s) you want to remove.
+    updated_culprits = [
+        culprit for culprit in culprits if culprit.get("filepath") != file_path
+    ]
+
+    # 3. Check if any file was actually removed
+    if len(updated_culprits) < initial_culprit_count:
+        print(f"** Successfully removed '{file_path}' from suspicious files. **")
+    else:
+        print(f"** File '{file_path}' was not found in the suspicious list. **")
+
+    # 4. Store the updated list back to REGISTRY as a JSON string
+    REGISTRY["file_culprits"] = json.dumps(updated_culprits)
+    print("REGISTRY successfully updated.")
+
+
+
+if __name__ == "__main__":
+    parsed_args = get_parser().parse_args()
+    main(parsed_args.filepath)
