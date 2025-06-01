@@ -634,17 +634,13 @@ class DefaultAgent(AbstractAgent):
         # Get the suspicious files list from _env
         suspicious_files_list = self._env.suspicious_files if self._env.suspicious_files is not None else []
 
-        # Convert the Python list of dicts to a formatted JSON string
-        # This will ensure it's rendered nicely with indentation in the template
-        formatted_suspicious_files = json.dumps(suspicious_files_list, indent=2)
-
         return dict(
             command_docs=self.tools.config.command_docs,
             **self.tools.config.env_variables,
             **kwargs,
             problem_statement=self._problem_statement.get_problem_statement(),
             repo=self._env.repo.repo_name if self._env.repo is not None else "",
-            suspicious_files=formatted_suspicious_files,
+            suspicious_files=suspicious_files_list,
             **self._problem_statement.get_extra_fields(),
         )
 

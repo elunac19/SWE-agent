@@ -24,7 +24,7 @@ _EDIT_SUCCESS_MSG = """File updated. Please review the changes and make sure the
 def get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("line_range", help="Line range in format start:end")
-    parser.add_argument("replacement_text", help="The text to replace the specified lines with. Use '\\n' for newlines.", nargs="?")
+    parser.add_argument("replacement_text", help="The text to replace the specified lines with. Use actual newlines, not escaped sequences.", nargs="?")
     return parser
 
 
@@ -52,7 +52,8 @@ def main(line_range: str, replacement_text: Union[str, None] = None):
     if replacement_text is None:
         print(_USAGE_MSG)
         exit(1)
-
+    # some preprocessing:
+    replacement_text = replacement_text.replace('\\n', '\n')
     # Perform the edit
     wf.set_window_text(replacement_text, line_range=(start_line, end_line))
 

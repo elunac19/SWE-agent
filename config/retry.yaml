@@ -166,7 +166,7 @@ agent:
           And consider that a previous agent found these files suspicious: (Not guaranteed)
           
           <suspicious_files>
-          {{suspicious_files}}
+          {{ suspicious_files | tojson(indent=2)}}
           </suspicious_files>
           
           Can you help me implement the necessary changes to the repository so that the requirements specified in the <pr_description> are met?
@@ -179,7 +179,6 @@ agent:
           3. Edit the sourcecode of the repo to resolve the issue
           4. Think about edgecases and make sure your fix handles them as well
           5. Read what all of your tools do! One of them might be the key you need to do an edit properly or locate the file where the problem is.
-          6. Be careful with your command arguments! Since they are run in a shell like environment proper usage of \\n is expected, preferably add a whitespace before it always.
 
         next_step_template: &next_step_no_diff |-
           OBSERVATION:
