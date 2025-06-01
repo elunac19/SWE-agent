@@ -53,20 +53,37 @@ agent:
           {{problem_statement}}
           </problem_statement>
           
-          Your goal is to use your available tools (like `ls`, `cat`, `grep`, `find`, `open_file`, etc., and specifically `add_suspicious_file`) to pinpoint files that are highly correlated with the problem described. Focus on files where:
+          Your goal is to use your available tools (like `ls`, `cat`, `grep`, `find`, `open_file`, etc., and specifically `add_suspicious_file`) to pinpoint files that are highly correlated with the problem described. **Focus strictly on application source code, configuration files, and dependency manifests.**
+          
+          Specifically, when identifying suspicious files:
+          * **DO focus on:**
+              * **Application Source Code:** Files containing the main logic (e.g., `.py`, `.js`, `.java`, `.go`, `.cs`, `.rb`, `.php`, `.cpp`, `.c`, etc.).
+              * **Configuration Files:** Files that dictate application settings, database connections, environment variables (e.g., `.json`, `.yaml`, `.yml`, `.xml`, `.env`, `.ini`, `.properties`).
+              * **Dependency Manifests:** Files listing project dependencies (e.g., `package.json`, `requirements.txt`, `Gemfile`, `pom.xml`, `go.mod`, `build.gradle`).
+          * **DO NOT focus on:**
+              * **Test Files:** Files clearly identified as tests (e.g., those in `tests/` directories, or with `_test.py`, `.spec.js`, `test_*.go` naming conventions). These are already handled.
+              * **Patch Files:** Files with `.patch` or `.diff` extensions. These describe changes, but are not the source of the active problem.
+              * **Documentation Files:** (e.g., `README.md`, `LICENSE`, `.md` files) unless they are specifically misguiding about the problem's setup.
+              * **Build Artifacts/Generated Files:** (e.g., `node_modules`, `.git/`, compiled binaries, temporary files).
+              * **Hidden Files:** (e.g., `.gitignore`, `.editorconfig`) unless directly related to configuration issues.
+          
+          When determining if a file is suspicious, your reasoning **MUST be based on concrete evidence from the file's content or its Git history.** Do not make assumptions without inspection.
+          
+          Focus on files where:
+          * **You have explicitly examined their content** using tools like `open_file` or `cat`.
           * Recent changes (check `git log` or `git blame` if available) align with the problem's timeline.
           * Code structure or configuration values seem logically related to the issue.
-          * Dependencies (`package.json`, `requirements.txt`, etc.) might introduce known vulnerabilities or incompatibilities.
-
+          * Dependencies might introduce known vulnerabilities or incompatibilities.
+          
           **Follow these steps to resolve the issue:**
-          1.  **Start by exploring the repository structure.** Use `ls -R` or view_file_structure
-          2.  **Identify potentially relevant directories/files.** Use `grep` with keywords from the `<problem_statement>` or `git log` to find recently changed files.
-          3.  **Inspect file content.** Use `open_file` and `cat` to examine suspicious files.
-          4.  **When you identify a strong candidate, immediately use `add_suspicious_file`** with the correct `filepath`, `type`, `severity`, and `reasoning`.
-          5.  **Continue exploration:** Keep looking for more culprits until you are confident you have found the primary files.
+          1.  **Start by exploring the repository structure.** Use `ls -R` or `view_file_structure` to get a broad overview.
+          2.  **Identify potentially relevant directories/files.** Use `grep` with keywords from the `<problem_statement>` or `git log` to narrow down candidates.
+          3.  **THIS IS CRITICAL: YOU MUST INSPECT THE CONTENT OF CANDIDATE FILES.** Use `open_file <filepath>` to view files in the editor, and `cat <filepath>` to dump their entire content. **Your reasoning for `add_suspicious_file` MUST come from direct observation of the file's content.**
+          4.  **When you identify a strong candidate that fits the criteria AND you have inspected its content, immediately use `add_suspicious_file`** with the correct `filepath`, `type`, `severity`, and **a reasoning that directly references your findings within the file.**
+          5.  **Continue rigorous exploration and inspection:** Keep looking for more culprits and **always open and review files** before adding them.
           6.  **Once all culprits are added, your final action is to `submit` your findings.**
-
-          Remember, your primary objective is to *find and log* suspicious files, not to fix the code at this stage.
+          
+          Remember, your primary objective is to *find and log* **application-level** suspicious files, backed by direct evidence from your file inspections, not to fix the code at this stage.
         next_step_template: |-
           OBSERVATION:
           {{observation}}
