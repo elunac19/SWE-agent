@@ -1,0 +1,9 @@
+tools:
+  submit:
+    signature: "submit <notes>"
+    docstring: "Submits all added suspicious files. This command will submit an empty JSON if the suspicious files array is empty"
+    arguments:
+      - name: notes
+        type: string
+        description: "Any notes you want to add to forward to the CodeEditor Agent, try to be descriptive! Any help is appreciated."
+        required: false

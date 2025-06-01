@@ -24,7 +24,7 @@ _EDIT_SUCCESS_MSG = """File updated. Please review the changes and make sure the
 def get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("line_range", help="Line range in format start:end")
-    parser.add_argument("replacement_text", help="Text to insert", nargs="?")
+    parser.add_argument("replacement_text", help="The text to replace the specified lines with. Use '\\n' for newlines.", nargs="?")
     return parser
 
 

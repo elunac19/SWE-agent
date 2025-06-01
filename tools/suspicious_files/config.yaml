@@ -1,0 +1,37 @@
+tools:
+  add_suspicious_file:
+    signature: "add_suspicious_file <type> <severity> <reasoning> [<filepath>]"
+    docstring: "Adds a file to the list of suspicious files. If 'filepath' is not provided, the currently open file will be used. Requires 'type', 'severity', and 'reasoning'."
+    arguments:
+      - name: type
+        type: string
+        description: "The category of the file (e.g., 'code', 'configuration', 'dependency', 'documentation', 'test', 'other')."
+        required: true
+        argument_format: "--type {{value}}"
+      - name: severity
+        type: string
+        description: "The agent's assessment of how critical the file is to the issue ('high', 'medium', 'low', 'info')."
+        required: true
+        argument_format: "--severity {{value}}"
+      - name: reasoning
+        type: string
+        description: "A concise explanation of why the file is considered suspicious, based on static analysis or Git history."
+        required: true
+        argument_format: "--reasoning {{value}}"
+      - name: filepath
+        type: string
+        description: "Optional: The path to the suspicious file. If not provided, the currently open file will be used."
+        required: false
+        argument_format: "--filepath {{value}}"
+  list_suspicious_files:
+    signature: "list_suspicious_files"
+    docstring: "Lists all currently identified suspicious files with their details."
+    arguments: [ ]
+  remove_suspicious_file:
+    signature: "remove_suspicious_file <filepath>"
+    docstring: "Removes a file from the list of suspicious files."
+    arguments:
+      - name: filepath
+        type: string
+        description: "The path to the file to be removed from the suspicious list."
+        required: true

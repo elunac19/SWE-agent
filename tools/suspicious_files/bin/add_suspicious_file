@@ -1,0 +1,69 @@
+#!/usr/bin/env python3
+
+import argparse
+import json
+import sys
+from typing import List, Dict
+
+from registry import registry as REGISTRY
+from windowed_file import FileNotOpened, WindowedFile  # type: ignore
+
+
+def get_parser() -> argparse.ArgumentParser:
+    """Sets up the argument parser for adding suspicious files."""
+    parser = argparse.ArgumentParser(description="Add suspicious files identified by the agent.")
+    # Arguments for add_suspicious_file
+    parser.add_argument("--type", type=str, required=True,
+                        help="The category of the file (e.g., 'code', 'configuration', 'dependency').")
+    parser.add_argument("--severity", type=str, required=True,
+                        help="The criticality of the file ('high', 'medium', 'low', 'info').")
+    parser.add_argument("--reasoning", type=str, required=True,
+                        help="A concise explanation of why the file is suspicious.")
+    parser.add_argument("--filepath", type=str, required=False,
+                        help="Optional: The path to the file. If not provided, the currently open file is used.")
+    return parser
+
+
+def main(file_path: str, type:str, severity:str, reasoning:str) -> None:
+    """Parses arguments and dispatches to the appropriate logic."""
+    if file_path is None:
+        try:
+            wf = WindowedFile(exit_on_exception=False)
+            file_path = wf.path
+        except FileNotOpened:
+            print("No file opened. Use the command `open` to open file first.")
+            sys.exit(1)
+
+    # 1. Retrieve existing culprits from REGISTRY and parse them from JSON string to Python list
+    culprits_json_string = REGISTRY.get("file_culprits", json.dumps([]))
+    culprits: List[Dict[str, str]] = json.loads(culprits_json_string)
+
+    found_existing = False
+    for culprit in culprits:
+        if culprit.get("filepath") == file_path:
+            print(f"** Updating existing entry for '{file_path}' **")
+            culprit["type"] = type
+            culprit["severity"] = severity
+            culprit["reasoning"] = reasoning
+            found_existing = True
+            break
+
+    if not found_existing:
+        # Create the new suspicious file entry
+        new_culprit = {
+            "filepath": file_path,
+            "type": type,
+            "severity": severity,
+            "reasoning": reasoning,
+        }
+        culprits.append(new_culprit)
+        print(f"** Added new suspicious file: '{file_path}' **")
+
+    REGISTRY["file_culprits"] = json.dumps(culprits)
+    print("REGISTRY successfully updated.")
+
+
+
+if __name__ == "__main__":
+    parsed_args = get_parser().parse_args()
+    main(parsed_args.filepath, parsed_args.type, parsed_args.severity,parsed_args.reasoning)
