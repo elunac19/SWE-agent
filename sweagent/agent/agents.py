@@ -633,7 +633,7 @@ class DefaultAgent(AbstractAgent):
 
         try:
             suspicious_files_obj = json.loads(self._env.suspicious_files)
-        except json.JSONDecodeError:
+        except json.JSONDecodeError | TypeError:
             # Handle case where file isn't valid JSON
             suspicious_files_obj = {}
 
