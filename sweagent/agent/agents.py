@@ -637,7 +637,6 @@ class DefaultAgent(AbstractAgent):
             self.logger.warning("Could not load suspicious_files")
             # Handle case where file isn't valid JSON
             suspicious_files_obj = {}
-        self.logger.debug(f"suspicious_files: {suspicious_files_obj}")
 
         return dict(
             command_docs=self.tools.config.command_docs,
@@ -645,7 +644,7 @@ class DefaultAgent(AbstractAgent):
             **kwargs,
             problem_statement=self._problem_statement.get_problem_statement(),
             repo=self._env.repo.repo_name if self._env.repo is not None else "",
-            suspicious_files=json.loads(suspicious_files_obj),
+            suspicious_files=suspicious_files_obj,
             **self._problem_statement.get_extra_fields(),
         )
 
