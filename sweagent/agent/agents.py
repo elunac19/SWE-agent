@@ -631,16 +631,13 @@ class DefaultAgent(AbstractAgent):
         assert self._problem_statement is not None
         assert self._env is not None
 
-        # Get the suspicious files list from _env
-        suspicious_files_list = self._env.suspicious_files if self._env.suspicious_files is not None else []
-
         return dict(
             command_docs=self.tools.config.command_docs,
             **self.tools.config.env_variables,
             **kwargs,
             problem_statement=self._problem_statement.get_problem_statement(),
             repo=self._env.repo.repo_name if self._env.repo is not None else "",
-            suspicious_files=suspicious_files_list,
+            suspicious_files=json.loads(self._env.suspicious_files),
             **self._problem_statement.get_extra_fields(),
         )
 
