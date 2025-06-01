@@ -386,6 +386,8 @@ class RetryAgent(AbstractAgent):
             if step_output.done:
                 if self._agent.finder:
                     files_found = self._agent.info["submission"]
+                    # remove submission of suspicious files
+                    self._agent.info["submission"] = ""
                     self._env.suspicious_files = files_found
                 else:
                     self._rloop.on_submit(
