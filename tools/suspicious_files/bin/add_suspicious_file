@@ -29,7 +29,7 @@ def main(file_path: str, type:str, severity:str, reasoning:str) -> None:
     if file_path is None:
         try:
             wf = WindowedFile(exit_on_exception=False)
-            file_path = wf.path
+            file_path = str(wf.path)
         except FileNotOpened:
             print("No file opened. Use the command `open` to open file first.")
             sys.exit(1)

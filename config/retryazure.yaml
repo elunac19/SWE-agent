@@ -14,6 +14,7 @@ agent:
         per_instance_call_limit: 40
         max_input_tokens: 0  # (3)!
         temperature: 0.6
+        delay: 10.0
       templates:
         system_template: |-
           You are an expert AI assistant specialized in code analysis and file system exploration. Your primary directive is to **identify and log suspicious files** that may be related to a given problem description. You operate directly in the command line with a special interface.
