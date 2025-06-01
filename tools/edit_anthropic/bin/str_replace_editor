@@ -31,7 +31,7 @@ MAX_WINDOW_EXPANSION_EDIT_CONFIRM = int(REGISTRY.get("MAX_WINDOW_EXPANSION_EDIT_
 USE_FILEMAP = REGISTRY.get("USE_FILEMAP", "false").lower() == "true"
 USE_LINTER = REGISTRY.get("USE_LINTER", "false").lower() == "true"
 Command = str
-SNIPPET_LINES: int = 4
+SNIPPET_LINES: int = 10
 LINT_WARNING_TEMPLATE = """
 
 <NOTE>Your edits have been applied, but the linter has found syntax errors.</NOTE>

@@ -399,7 +399,6 @@ class FunctionCallingParser(AbstractParseFunction, BaseModel):
         if not isinstance(tool_call["function"]["arguments"], dict):
             try:
                 values = json.loads(tool_call["function"]["arguments"])
-                print("DEBUG - After json.loads():", values)
             except json.JSONDecodeError:
                 msg = "Tool call arguments are not valid JSON."
                 raise FunctionCallingFormatError(msg, "invalid_json")
@@ -424,7 +423,6 @@ class FunctionCallingParser(AbstractParseFunction, BaseModel):
             else ""
             for arg in command.arguments
         }
-        print("DEBUG - After formatting, formatted_args:", formatted_args)
         return command.invoke_format.format(**formatted_args).strip()
 
     def __call__(self, model_response: dict, commands: list[Command], strict=False):

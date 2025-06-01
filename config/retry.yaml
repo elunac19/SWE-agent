@@ -180,7 +180,8 @@ agent:
           <pr_description>
           {{problem_statement}}
           </pr_description>
-          And consider that a previous agent found these files suspicious: (Not guaranteed)
+          
+          **Note:** A previous agent might have flagged the following files as potentially suspicious. **Review this list carefully, but treat it as a starting point, not definitive truth.** Your task is to independently verify each file and determine if it genuinely fits your criteria for being relevant to the fix. You are free to consider these, or disregard them if your investigation proves otherwise.
           
           <suspicious_files>
           {{ suspicious_files | tojson(indent=2)}}

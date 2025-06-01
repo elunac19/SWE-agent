@@ -3,6 +3,18 @@ import sys
 import subprocess
 from windowed_file import FileNotOpened, WindowedFile  # type: ignore
 
+
+AI_COMPILATION_ERROR_DIRECTIVE = (
+        "🛑 COMPILATION FAILED: Your recent edits to the current file have resulted in a compilation error."
+        "\n  -> **CRITICAL STEP:** You *must* thoroughly re-examine the compiler's output and your specific changes to the current file."
+        "\n  -> **RE-VERIFY:** Carefully review the parts you've modified, checking for syntax errors, logical inconsistencies, or missing definitions."
+        "\n  -> **ADAPT STRATEGY:** If your current editing approach isn't working, consider:"
+        "\n     - Using a different editor tool (e.g., `replace` if `str_replace` caused issues, or vice-versa)."
+        "\n     - Consulting documentation for the language/compiler to understand error messages better."
+        "\n     - Isolating your last change to pinpoint the exact cause of the failure."
+        "\n  -> **ANALYZE DEEPLY:** Think critically about what the compiler's error messages (especially line numbers and types of errors) *truly* imply about your code."
+    )
+
 ## we are not really compiling, just doing a sintax check
 def compile_c_code(file_to_compile: str):
     compiler = ""
@@ -29,7 +41,62 @@ def compile_c_code(file_to_compile: str):
         sys.exit(1) # not sure about exiting here but oh well
     except subprocess.CalledProcessError as e:
         print(f"Error compiling '{file_to_compile}':")
-        print(e.stderr)
+        lines = e.stderr.strip().split('\n')
+        if len(lines) > 20:
+            truncated_lines = lines[:20]
+            truncated_lines.append(f"... (truncated {len(lines) - 20} more lines)")
+            lines = truncated_lines
+        processed_stderr = '\n'.join(lines)
+        guidance = [AI_COMPILATION_ERROR_DIRECTIVE]
+
+        if "no return statement in function returning non-void" in e.stderr:
+            guidance.append(
+                "💡 TIP: This function is declared to return a value but has no return statement. Add a return statement or change the function to return void.")
+        if "expected ';'" in e.stderr:
+            guidance.append("💡 TIP: Missing semicolon. Check the line before the error location.")
+        if "undeclared identifier" in e.stderr or "was not declared" in e.stderr:
+            guidance.append(
+                "💡 TIP: Variable/function not declared. Check spelling, scope, or add necessary #include statements.")
+        if "redefinition" in e.stderr:
+            guidance.append(
+                "💡 TIP: Something is defined multiple times. Remove duplicate definitions or use header guards.")
+
+        if "}" in e.stderr and ("{" in e.stderr or "expected" in e.stderr):
+            guidance.append("💡 TIP: Brace mismatch. Count your opening { and closing } braces carefully.")
+
+        if "undefined reference to" in e.stderr or "unresolved external symbol" in e.stderr or "symbol(s) not found" in e.stderr:
+            guidance.append(
+                "💡 TIP: Undefined reference or unresolved symbol. Check if you've defined the function/variable, spelled it correctly, or linked all necessary object files/libraries during compilation.")
+
+        if "invalid conversion" in e.stderr or "incompatible types" in e.stderr or "cannot convert" in e.stderr or "type mismatch" in e.stderr:
+            guidance.append(
+                "💡 TIP: Type mismatch or invalid conversion. Ensure variables and function arguments have compatible types. Consider explicit type casting if intentional.")
+
+        if "no such file or directory" in e.stderr or "fatal error: " in e.stderr and ".h: No such file or directory" in e.stderr or "ModuleNotFoundError" in e.stderr or "ImportError" in e.stderr:
+            guidance.append(
+                "💡 TIP: Missing header/import. **IMPORTANT** You can safely proceed and ignore this error. Your environment is not designed to be able to build everything. ")
+
+        if "too few arguments to function" in e.stderr or "too many arguments to function" in e.stderr or "expected " in e.stderr and "arguments but got " in e.stderr:
+            guidance.append(
+                "💡 TIP: Incorrect number of arguments in a function call. Check the function's definition/signature and provide the exact number of arguments it expects.")
+
+        if "uninitialized variable" in e.stderr or "used uninitialized" in e.stderr:
+            guidance.append(
+                "💡 TIP: Uninitialized variable. Ensure all variables are given an initial value before they are used, especially pointers or critical data.")
+
+        if "syntax error" in e.stderr or "unexpected token" in e.stderr or "parse error" in e.stderr or "invalid syntax" in e.stderr:
+            # Avoid duplicating with "expected ';'" or "brace mismatch" if those are more specific
+            if not any(tip in e.stderr for tip in
+                       ["expected ';'", "}", "{"]):  # Only add if not already covered by specific syntax tips
+                guidance.append(
+                    "💡 TIP: General syntax error. Review the indicated line and its surrounding context for any unexpected characters, keywords, or structural mistakes.")
+
+        if len([line for line in lines if "error:" in line]) > 5:
+            guidance.append("🚨 MANY ERRORS: Consider reverting recent changes and making smaller, incremental edits.")
+        result = processed_stderr
+        if guidance:
+            result += "\n\n" + "\n".join(guidance)
+        print(result)
 
 def main():
     if len(sys.argv) < 2:
