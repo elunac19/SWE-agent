@@ -633,9 +633,11 @@ class DefaultAgent(AbstractAgent):
 
         try:
             suspicious_files_obj = json.loads(self._env.suspicious_files)
-        except ValueError | TypeError:
+        except (ValueError, TypeError):
+            self.logger.warning("Could not load suspicious_files")
             # Handle case where file isn't valid JSON
             suspicious_files_obj = {}
+        self.logger.debug(f"suspicious_files: {suspicious_files_obj}")
 
         return dict(
             command_docs=self.tools.config.command_docs,
