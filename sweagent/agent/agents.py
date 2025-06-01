@@ -631,13 +631,19 @@ class DefaultAgent(AbstractAgent):
         assert self._problem_statement is not None
         assert self._env is not None
 
+        try:
+            suspicious_files_obj = json.loads(self._env.suspicious_files)
+        except json.JSONDecodeError:
+            # Handle case where file isn't valid JSON
+            suspicious_files_obj = {}
+
         return dict(
             command_docs=self.tools.config.command_docs,
             **self.tools.config.env_variables,
             **kwargs,
             problem_statement=self._problem_statement.get_problem_statement(),
             repo=self._env.repo.repo_name if self._env.repo is not None else "",
-            suspicious_files=json.loads(self._env.suspicious_files),
+            suspicious_files=json.loads(suspicious_files_obj),
             **self._problem_statement.get_extra_fields(),
         )
 
