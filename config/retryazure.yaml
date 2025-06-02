@@ -26,7 +26,7 @@ agent:
           1.  **ACTION-FIRST:** Your response *must* begin with a tool call. A tool call is *always* needed, no exceptions.
           2.  **NO PRE-AMBLE:** Do *not* output any preparatory text, thinking process, or conversational filler before taking action.
           3.  **MINIMAL INTERNAL THOUGHT:** If any internal thought is necessary (e.g., parsing a complex request before a tool call), keep it to an absolute minimum. *Never* output this thinking process to the user.
-          4.  **DIRECT TOOL USAGE:** When a tool is the solution, your response *must* be solely the tool call. Do not explain *why* you are calling the tool, just call it.
+          4.  **DIRECT TOOL USAGE:** When a tool is the solution, your response *must* be solely the tool call. Do not explain *why* you are calling the tool, just call it. Limit yourself to *ONE* tool call, multiple tools running at the same time is *NOT* supported.
           5.  **REPEATED TOOL USAGE:** Using the *same* tool multiple times with the same arguments will *NOT* yield different results. If a tool is not working as expected, try changing tool or changing your arguments.
           6.  **NO INSTALLING PACKAGES** Your environment is not designed for you to install packages with pip, apt-get, or other packet managers. So please *don't* do that.
           7.  **INTERACTIVE BASH USAGE** Your environment is not designed for you to use interactive commands. So please *don't* do that.
@@ -86,6 +86,7 @@ agent:
           5.  **Continue rigorous exploration and inspection:** Keep looking for more culprits and **always open and review files** before adding them.
           6.  **Once all culprits are added, your final action is to `submit` your findings.**
 
+          Remember: For every response, you must include exactly ONE tool call/function call.
           Remember, your primary objective is to *find and log* **application-level** suspicious files, backed by direct evidence from your file inspections, not to fix the code at this stage.
         next_step_template: |-
           OBSERVATION:
@@ -134,7 +135,7 @@ agent:
           1.  **ACTION-FIRST:** Your response *must* begin with a tool call. A tool call is *always* needed, no exceptions. 
           2.  **NO PRE-AMBLE:** Do *not* output any preparatory text, thinking process, or conversational filler before taking action.
           3.  **MINIMAL INTERNAL THOUGHT:** If any internal thought is necessary (e.g., parsing a complex request before a tool call), keep it to an absolute minimum. *Never* output this thinking process to the user.
-          4.  **DIRECT TOOL USAGE:** When a tool is the solution, your response *must* be solely the tool call. Do not explain *why* you are calling the tool, just call it.
+          4.  **DIRECT TOOL USAGE:** When a tool is the solution, your response *must* be solely the tool call. Do not explain *why* you are calling the tool, just call it. Limit yourself to *ONE* tool call, multiple tools running at the same time is *NOT* supported.
           5.  **REPEATED TOOL USAGE:** Using the *same* tool multiple times with the same arguments will *NOT* yield different results. If a tool is not working as expected, try changing tool or changing your arguments. 
           6.  **NO INSTALLING PACKAGES** Your environment is not designed for you to install packages with pip, apt-get, or other packet managers. So please *don't* do that.
           7.  **INTERACTIVE BASH USAGE**  Your environment is not designed for you to use interactive commands. So please *don't* do that.
@@ -205,7 +206,7 @@ agent:
 
 
           While your thinking should be through, DO NOT output all of your thinking, keep it to a minimum. Instead of talking about the edits you want to do, just use tools to do them.
-          Focus on doing actions NOT talking about doing the actions.
+          Focus on doing actions NOT talking about doing the actions. And remember: For every response, you must include exactly ONE tool call/function call.
         next_step_template: &next_step_no_diff |-
           OBSERVATION:
           {{observation}}

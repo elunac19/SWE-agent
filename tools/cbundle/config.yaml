@@ -1,9 +1,9 @@
 tools:
   compile:
-    signature: "compile [<filename>]"
+    signature: "compile [<filepath>]"
     docstring: "compiles with either g++ or gcc depending on type of file, does not produce output file."
     arguments:
-      - name: filename
+      - name: filepath
         type: string
-        description: "the name of the file to compile, if no file is given, will try to compile current open file"
+        description: "the name of the file to compile, if no file is given, will try to compile current open file, full path must be provided"
         required: false
