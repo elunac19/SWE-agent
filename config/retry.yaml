@@ -5,7 +5,7 @@ agent:
       finder: True
       model:
         name: hosted_vllm/cplusplus-lora
-        api_base: https://dodi1408--openai-compatible-romoamigo-qwen3-14b-serve.modal.run/v1
+        api_base: https://tec-team24--openai-compatible-romoamigo-qwen3-14b-serve.modal.run/v1
         api_key: ROISASUPERHOE
         per_instance_cost_limit: 0   # (2)!
         total_cost_limit: 0
@@ -114,7 +114,7 @@ agent:
     - type: default
       model: &model
         name: hosted_vllm/cplusplus-lora
-        api_base: https://dodi1408--openai-compatible-romoamigo-qwen3-14b-serve.modal.run/v1
+        api_base: https://tec-team24--openai-compatible-romoamigo-qwen3-14b-serve.modal.run/v1
         api_key: ROISASUPERHOE
         per_instance_cost_limit: 0   # (2)!
         total_cost_limit: 0
@@ -286,7 +286,7 @@ agent:
           n: 5
   retry_loop:
     type: chooser
-    max_attempts: 3
+    max_attempts: 2
     cost_limit: 6.0
     chooser:
       system_template: |
