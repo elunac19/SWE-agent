@@ -26,7 +26,11 @@ def compile_c_code(file_to_compile: str):
         print("Only use this command to compile .c or .cpp files!")
         sys.exit(1)
 
-    compile_command = [compiler, file_to_compile,"-fsyntax-only"]
+    compile_command = [compiler, "-fsyntax-only"]
+    if compiler == "g++":
+        compile_command.insert(1, "-std=c++17")
+    compile_command.append(file_to_compile)
+
     compiler_version = [compiler,"--version"]
     process = subprocess.run(compiler_version, check=True, capture_output=True, text=True)
     print("Compiler version %s",process.stdout)
