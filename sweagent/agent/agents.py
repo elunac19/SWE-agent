@@ -389,12 +389,11 @@ class RetryAgent(AbstractAgent):
                     # remove submission of suspicious files
                     self._agent.info["submission"] = ""
                     self._env.suspicious_files = files_found
-                else:
-                    self._rloop.on_submit(
-                    ReviewSubmission(
-                        trajectory=self._agent.trajectory,
-                        info=self._agent.info,
-                        model_stats=self._agent.model.stats,))
+
+                self._rloop.on_submit(ReviewSubmission(
+                    trajectory=self._agent.trajectory,
+                    info=self._agent.info,
+                    model_stats=self._agent.model.stats,))
 
                 if isinstance(self._rloop, ScoreRetryLoop):
                     self._agent.info["review"] = self._rloop.reviews[-1].model_dump()  # type: ignore
